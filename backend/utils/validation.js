@@ -1,4 +1,4 @@
-const { celebrate, errors } = require('celebrate');
+const { celebrate } = require('celebrate');
 
 const Joi = require('joi');
 

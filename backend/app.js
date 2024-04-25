@@ -8,12 +8,7 @@ const userController = require('./controllers/users');
 
 const authorization = require('./middlewares/auth');
 
-const validateURL = (value, helpers) => {
-  if (validator.isURL(value)) {
-    return value;
-  }
-  return helpers.error('string.uri');
-};
+const { requestLogger, errorLogger } = require('./middlewares/logger');
 
 const mongoose = require('mongoose');
 
@@ -34,13 +29,13 @@ app.get('/crash-test', () => {
     throw new Error('O servidor travará agora');
   }, 0);
 });
-
+app.use(requestLogger);
 app.post('/signup', validateSignUp, userController.createUser);
 app.post('/signin', validateLogin, userController.login);
 app.use(authorization);
-
 app.use(usersRoute);
 app.use(cardsRoute);
+app.use(errorLogger);
 app.use(errors());
 app.use((err, req, res, next) => {
   const { statusCode = 500, message } = err;

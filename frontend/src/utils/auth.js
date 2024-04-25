@@ -1,4 +1,4 @@
-export const BASE_URL = 'https://register.nomoreparties.co';
+export const BASE_URL = 'api.aroundusa.mooo.com';
 const ERROR_INVALID_DATA = 400;
 const ERROR_NOT_FOUND = 401;
 

@@ -120,7 +120,7 @@ class Api {
 }
 
 const api = new Api({
-  baseUrl: "https://around.nomoreparties.co/v1/web_ptbr_08",
+  baseUrl: "api.aroundusa.mooo.com",
   headers: {
     authorization: "728f9375-e1ce-42d8-ae33-9e03a1e5fb11",
     "Content-Type": "application/json",
