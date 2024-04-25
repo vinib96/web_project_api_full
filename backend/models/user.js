@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 var validator = require('validator');
 const validateEmail = (email) => validator.isEmail(email);
+
 const userSchema = new mongoose.Schema({
   name: {
     type: String,
@@ -16,16 +17,17 @@ const userSchema = new mongoose.Schema({
   },
   avatar: {
     type: String,
-    default:
-      'https://practicum-content.s3.us-west-1.amazonaws.com/resources/moved_avatar_1604080799.jpg',
+
     validate: {
       validator(v) {
-        return /^((https?|ftp|smtp):\/\/)?(www.)?[a-z0-9]+\.[a-z]+(\/[a-zA-Z0-9#]+\/?)*/gm.test(
+        return /^(https?):\/\/(www\.)?[\w-@:%+~#=]+[.][.\w/\-?#=&~@:()!$+%]*$/gm.test(
           v
         );
       },
       message: (props) => `${props.value} não é válido!`,
     },
+    default:
+      'https://practicum-content.s3.us-west-1.amazonaws.com/resources/moved_avatar_1604080799.jpg',
   },
   email: {
     type: String,

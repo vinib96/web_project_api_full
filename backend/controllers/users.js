@@ -1,5 +1,10 @@
 const User = require('../models/user');
-const Joi = require('joi');
+
+const bcrypt = require('bcrypt');
+
+require('dotenv').config();
+
+const { NODE_ENV, JWT_SECRET } = process.env;
 
 const ERROR_NOT_FOUND = 404;
 const ERROR_FETCH = 500;
@@ -34,8 +39,23 @@ module.exports.getUsersById = (req, res) => {
 module.exports.createUser = (req, res) => {
   const { name, about, avatar, email, password } = req.body;
 
-  User.create({ name, about, avatar, email, password })
-    .then((users) => res.send({ data: users }))
+  bcrypt
+    .hash(password, 10)
+    .then((hash) =>
+      User.create({
+        name,
+        about,
+        avatar,
+        email,
+        password: hash,
+      })
+    )
+    .then((user) => {
+      res.status(201).send({
+        _id: user._id,
+        email: user.email,
+      });
+    })
     .catch((err) => {
       if (err.name === 'ValidationError') {
         res.status(ERROR_INVALID_DATA).send({ message: 'Dados inválidos' });
@@ -48,14 +68,31 @@ module.exports.createUser = (req, res) => {
 module.exports.login = (req, res) => {
   const { email, password } = req.body;
 
-  return User.findUserByCredentials(email, password)
+  User.findOne({ email })
+    .select('+password')
+    .exec()
     .then((user) => {
+      if (!user) {
+        return res.status(401).json('Email ou senha inválidos');
+      } else {
+        bcrypt.compare(password, user.password);
+      }
+    })
+    .then((matched) => {
+      if (!matched) {
+        return res.status(401).json('Email ou senha inválidos');
+      }
       res.send({
-        token: jwt.sign({ _id: user._id }, 'super-strong-secret', {
-          expiresIn: '7d',
-        }),
+        token: jwt.sign(
+          { _id: req._id },
+          NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret',
+          {
+            expiresIn: '7d',
+          }
+        ),
       });
     })
+
     .catch((err) => {
       res.status(401).send({ message: err.message });
     });
