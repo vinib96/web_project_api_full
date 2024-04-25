@@ -1,8 +1,8 @@
 const express = require('express');
 
-const { celebrate, errors } = require('celebrate');
+const { errors } = require('celebrate');
 
-const Joi = require('joi');
+const { validateSignUp, validateLogin } = require('./utils/validation');
 
 const userController = require('./controllers/users');
 
@@ -35,29 +35,8 @@ app.get('/crash-test', () => {
   }, 0);
 });
 
-app.post(
-  '/signup',
-  celebrate({
-    body: Joi.object().keys({
-      email: Joi.string().email().required(),
-      password: Joi.string().required(),
-      name: Joi.string().optional().min(2).max(30),
-      about: Joi.string().optional().min(2).max(30),
-      avatar: Joi.string().optional().uri(),
-    }),
-  }),
-  userController.createUser
-);
-app.post(
-  '/signin',
-  celebrate({
-    body: Joi.object().keys({
-      email: Joi.string().email().required(),
-      password: Joi.string().required(),
-    }),
-  }),
-  userController.login
-);
+app.post('/signup', validateSignUp, userController.createUser);
+app.post('/signin', validateLogin, userController.login);
 app.use(authorization);
 
 app.use(usersRoute);

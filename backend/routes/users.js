@@ -1,6 +1,6 @@
 const router = require('express').Router();
-const celebrate = require('celebrate');
-const Joi = require('joi');
+
+const { validateProfile, validateAvatar } = require('../utils/validation');
 
 const userController = require('../controllers/users');
 
@@ -8,8 +8,8 @@ router.get('/users', userController.getUsers);
 
 router.get('/users/:userId', userController.getUsersById);
 
-router.patch('/users/me', userController.updateUser);
+router.patch('/users/me', validateProfile, userController.updateUser);
 
-router.patch('/users/me/avatar', userController.updateAvatar);
+router.patch('/users/me/avatar', validateAvatar, userController.updateAvatar);
 
 module.exports = router;
