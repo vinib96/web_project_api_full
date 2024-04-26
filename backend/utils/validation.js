@@ -17,7 +17,7 @@ const validateSignUp = celebrate({
     password: Joi.string().required(),
     name: Joi.string().optional().min(2).max(30),
     about: Joi.string().optional().min(2).max(30),
-    avatar: Joi.string().required().custom(validateURL),
+    avatar: Joi.string().optional().custom(validateURL),
   }),
 });
 
@@ -44,7 +44,7 @@ const validateProfile = celebrate({
 
 const validateAvatar = celebrate({
   body: Joi.object().keys({
-    avatar: Joi.string().required().custom(validateURL),
+    avatar: Joi.string().optional().custom(validateURL),
   }),
 });
 

@@ -20,7 +20,15 @@ const usersRoute = require('./routes/users');
 
 const cardsRoute = require('./routes/cards');
 
+const allowedCors = [
+  'https://aroundusa.mooo.com/',
+  'http://aroundusa.mooo.com/',
+  'localhost:3000',
+];
+
 const { PORT = 3000 } = process.env;
+
+var cors = require('cors');
 
 app.use(express.json());
 
@@ -29,6 +37,8 @@ app.get('/crash-test', () => {
     throw new Error('O servidor travará agora');
   }, 0);
 });
+app.use(cors());
+app.options('*', cors());
 app.use(requestLogger);
 app.post('/signup', validateSignUp, userController.createUser);
 app.post('/signin', validateLogin, userController.login);
