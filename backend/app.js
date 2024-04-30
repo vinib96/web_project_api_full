@@ -20,13 +20,7 @@ const usersRoute = require('./routes/users');
 
 const cardsRoute = require('./routes/cards');
 
-const allowedCors = [
-  'https://aroundusa.mooo.com/',
-  'http://aroundusa.mooo.com/',
-  'localhost:3000',
-];
-
-const { PORT = 3000 } = process.env;
+const { PORT = 3001 } = process.env;
 
 var cors = require('cors');
 
