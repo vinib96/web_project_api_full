@@ -121,7 +121,8 @@ class Api {
 const token = localStorage.getItem('token');
 
 const api = new Api({
-  baseUrl: 'https://api.aroundus.photo-frame.com',
+  //baseUrl: 'https://api.aroundus.photo-frame.com',
+  baseUrl: 'http://localhost:3001',
   headers: {
     'Content-Type': 'application/json',
     Authorization: `Bearer ${token}`,

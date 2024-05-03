@@ -14,7 +14,7 @@ function Register({ handleRegister, handleRegisterError }) {
     auth
       .register(email, password)
       .then((res) => {
-        if (res.data) {
+        if (res.email) {
           handleRegister('success');
         } else {
           handleRegisterError('fail');

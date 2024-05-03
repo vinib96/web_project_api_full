@@ -19,7 +19,7 @@ module.exports = (req, res, next) => {
     return handleAuthError(res);
   }
 
-  const token = extractBearerToken();
+  const token = extractBearerToken(authorization);
   let payload;
 
   try {

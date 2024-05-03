@@ -26,7 +26,7 @@ function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isInfoToolOpen, setIsInfoToolOpen] = useState(false);
   const [popupType, setPopupType] = useState(false);
-
+  const [cardsApp, setCards] = useState([]);
   const [userEmail, setUserEmail] = useState('');
 
   const [currentUser, setCurrentUser] = useState({
@@ -36,10 +36,6 @@ function App() {
   });
 
   let history = useHistory();
-
-  useEffect(() => {
-    api.getUserInfo().then(setCurrentUser);
-  }, []);
 
   const EnableEsc = () => {
     const escFunction = useCallback((event) => {
@@ -83,11 +79,6 @@ function App() {
   function handleUpdateAvatar(avatar) {
     api.editAvatar(avatar).then(setCurrentUser).then(closeAllPopups);
   }
-
-  const [cardsApp, setCards] = useState([]);
-  useEffect(() => {
-    api.getInitialCards().then((apiCards) => setCards(apiCards));
-  }, []);
 
   function handleCardLike(card) {
     const isLiked = card.likes.some((i) => i._id === currentUser._id);
@@ -160,8 +151,10 @@ function App() {
             setIsLoggedIn(true);
             history.push('/');
             setUserEmail(res.data.email);
+            // setCurrentUser(res.data);
           }
         })
+
         .catch((err) => {
           console.log(err);
         });
@@ -169,6 +162,38 @@ function App() {
       setIsLoggedIn(false);
     }
   }, [isLoggedIn, userEmail]);
+
+  useEffect(() => {
+    if (isLoggedIn) {
+      api
+        .getUserInfo()
+        .then((userInfo) => {
+          setCurrentUser(userInfo.data);
+        })
+        .catch((err) => {
+          console.log('Erro ao recuperar informações do usuário:', err);
+        });
+    }
+  }, [isLoggedIn]);
+
+  // useEffect(() => {
+  //   if (isLoggedIn) {
+  //     api
+  //       .getInitialCards()
+  //       .then((apiCards) => setCards(apiCards))
+  //       .catch((err) => {
+  //         console.log('Erro ao recuperar informações do usuário:', err);
+  //       });
+  //   }
+  // }, [isLoggedIn]);
+  //   useEffect(() => {
+  //  api
+  //       .getInitialCards()
+  //       .then((apiCards) => setCards(apiCards))
+  //       .catch((err) => {
+  //         console.log(err);
+  //       });
+  //   }, []);
 
   return (
     <div className='App'>

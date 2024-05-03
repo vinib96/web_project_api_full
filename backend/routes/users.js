@@ -6,6 +6,8 @@ const userController = require('../controllers/users');
 
 router.get('/users', userController.getUsers);
 
+router.get('/users/me', userController.getCurrentUser);
+
 router.get('/users/:userId', userController.getUsersById);
 
 router.patch('/users/me', validateProfile, userController.updateUser);
