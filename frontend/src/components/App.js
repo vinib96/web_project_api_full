@@ -35,6 +35,8 @@ function App() {
     avatar: '',
   });
 
+  const token = localStorage.getItem('token');
+
   let history = useHistory();
 
   const EnableEsc = () => {
@@ -81,7 +83,7 @@ function App() {
   }
 
   function handleCardLike(card) {
-    const isLiked = card.likes.some((i) => i._id === currentUser._id);
+    const isLiked = card.likes.includes(currentUser._id);
 
     api.changeLikeCardStatus(card._id, isLiked).then((newCard) => {
       setCards((state) => state.map((c) => (c._id === card._id ? newCard : c)));
@@ -141,7 +143,7 @@ function App() {
   }
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
+    // const token = localStorage.getItem('token');
 
     if (token) {
       auth
@@ -151,7 +153,7 @@ function App() {
             setIsLoggedIn(true);
             history.push('/');
             setUserEmail(res.data.email);
-            // setCurrentUser(res.data);
+            setCurrentUser(res.data);
           }
         })
 
@@ -164,36 +166,21 @@ function App() {
   }, [isLoggedIn, userEmail]);
 
   useEffect(() => {
-    if (isLoggedIn) {
-      api
-        .getUserInfo()
-        .then((userInfo) => {
-          setCurrentUser(userInfo.data);
-        })
-        .catch((err) => {
-          console.log('Erro ao recuperar informações do usuário:', err);
-        });
-    }
-  }, [isLoggedIn]);
-
-  // useEffect(() => {
-  //   if (isLoggedIn) {
-  //     api
-  //       .getInitialCards()
-  //       .then((apiCards) => setCards(apiCards))
-  //       .catch((err) => {
-  //         console.log('Erro ao recuperar informações do usuário:', err);
-  //       });
-  //   }
-  // }, [isLoggedIn]);
-  //   useEffect(() => {
-  //  api
-  //       .getInitialCards()
-  //       .then((apiCards) => setCards(apiCards))
-  //       .catch((err) => {
-  //         console.log(err);
-  //       });
-  //   }, []);
+    api
+      .getUserInfo(token)
+      .then((res) => {
+        setCurrentUser(res.data);
+        api
+          .getInitialCards(token)
+          .then((res) => {
+            if (res.data) {
+              setCards(() => res.data);
+            }
+          })
+          .catch((err) => console.log(err));
+      })
+      .catch((err) => console.log(err));
+  }, [token]);
 
   return (
     <div className='App'>

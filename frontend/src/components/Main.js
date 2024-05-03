@@ -72,7 +72,8 @@ function Main({
       <section className='elements'>
         <template id='cards' />
         <ul className='elements__container'>
-          {cardsApp.map((card) => (
+          {
+          cardsApp.map((card) => (
             <Card
               cardData={card}
               key={card._id}

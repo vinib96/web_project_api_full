@@ -97,7 +97,10 @@ module.exports.updateUser = (req, res) => {
   const { name, about } = req.body;
 
   User.findByIdAndUpdate(req.user._id, { name, about })
-    .then((users) => res.send({ data: users }))
+    .then((users) => {
+      console.log({ data: users });
+      res.send({ data: users });
+    })
     .catch((err) => {
       if (err.name === 'ValidationError') {
         res.status(ERROR_INVALID_DATA).send({ message: 'Dados inválidos' });

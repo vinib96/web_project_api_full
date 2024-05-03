@@ -11,7 +11,7 @@ module.exports.getCards = (req, res) => {
 };
 
 module.exports.deleteCardsById = (req, res) => {
-  Card.findById(req.params.cardId)
+  Card.findByIdAndDelete(req.params.cardId)
     .orFail(() => {
       const error = new Error('Nenhum cartão encontrado com esse id');
       error.statusCode = ERROR_NOT_FOUND;
@@ -26,7 +26,7 @@ module.exports.createCard = (req, res) => {
 
   Card.create({ name, link, owner: req.user._id })
 
-    .then((cards) => res.send({ data: cards }))
+    .then((cards) => res.send(cards))
     .catch((err) => {
       if (err.name === 'ValidationError') {
         res.status(ERROR_INVALID_DATA).send({ message: 'Dados inválidos' });
@@ -36,16 +36,24 @@ module.exports.createCard = (req, res) => {
     });
 };
 
-module.exports.likeCard = (req) =>
+module.exports.likeCard = (req, res) =>
   Card.findByIdAndUpdate(
     req.params.cardId,
     { $addToSet: { likes: req.user._id } },
     { new: true }
-  );
+  )
+    .then((card) => {
+      res.send(card);
+    })
+    .catch(() => res.status(ERROR_FETCH).send({ message: 'Error' }));
 
-module.exports.dislikeCard = (req) =>
+module.exports.dislikeCard = (req, res) =>
   Card.findByIdAndUpdate(
     req.params.cardId,
     { $pull: { likes: req.user._id } },
     { new: true }
-  );
+  )
+    .then((card) => {
+      res.send(card);
+    })
+    .catch(() => res.status(ERROR_FETCH).send({ message: 'Error' }));
