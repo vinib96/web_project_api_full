@@ -6,7 +6,7 @@ const ERROR_INVALID_DATA = 400;
 
 module.exports.getCards = (req, res) => {
   Card.find({})
-    .then((cards) => res.send({ data: cards }))
+    .then((cards) => res.send({ data: cards.reverse() }))
     .catch(() => res.status(ERROR_FETCH).send({ message: 'Error' }));
 };
 
@@ -50,6 +50,7 @@ module.exports.likeCard = (req, res) =>
 module.exports.dislikeCard = (req, res) =>
   Card.findByIdAndUpdate(
     req.params.cardId,
+
     { $pull: { likes: req.user._id } },
     { new: true }
   )

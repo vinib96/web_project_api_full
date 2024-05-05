@@ -96,10 +96,9 @@ module.exports.login = (req, res) => {
 module.exports.updateUser = (req, res) => {
   const { name, about } = req.body;
 
-  User.findByIdAndUpdate(req.user._id, { name, about })
+  User.findByIdAndUpdate(req.user._id, { name, about }, { new: true })
     .then((users) => {
-      console.log({ data: users });
-      res.send({ data: users });
+      res.send(users);
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
@@ -112,8 +111,8 @@ module.exports.updateUser = (req, res) => {
 
 module.exports.updateAvatar = (req, res) => {
   const { avatar } = req.body;
-  User.findByIdAndUpdate(req.user._id, { avatar })
-    .then((users) => res.send({ data: users }))
+  User.findByIdAndUpdate(req.user._id, { avatar }, { new: true })
+    .then((users) => res.send(users))
     .catch((err) => {
       if (err.name === 'ValidationError') {
         res.status(ERROR_INVALID_DATA).send({ message: 'Dados inválidos' });

@@ -1,9 +1,9 @@
-import { useContext, useEffect, useState } from "react";
-import { UserContext } from "../contexts/CurrentUserContext";
-import PopupWithForm from "./PopupWithForm";
+import { useContext, useEffect, useState } from 'react';
+import { UserContext } from '../contexts/CurrentUserContext';
+import PopupWithForm from './PopupWithForm';
 function EditProfilePopup({ isOpen, onClose, onUpdateUser }) {
-  const [name, setName] = useState("");
-  const [description, setDescription] = useState("");
+  const [name, setName] = useState('');
+  const [description, setDescription] = useState('');
 
   const currentUser = useContext(UserContext);
 
@@ -24,45 +24,45 @@ function EditProfilePopup({ isOpen, onClose, onUpdateUser }) {
   return (
     <>
       <PopupWithForm
-        name={"profile"}
-        title={"Editar Perfil"}
-        buttonName={"Enviar"}
+        name={'profile'}
+        title={'Editar Perfil'}
+        buttonName={'Enviar'}
         isOpen={isOpen}
         onClose={onClose}
         onSubmit={handleSubmit}
       >
-        {" "}
+        {' '}
         <label>
           <input
-            type="text"
-            name="name"
-            id="name-input"
-            className="popup__input popup__input_type_name"
-            placeholder="Nome"
+            type='text'
+            name='name'
+            id='name-input'
+            className='popup__input popup__input_type_name'
+            placeholder='Nome'
             minLength={2}
             maxLength={40}
-            value={name}
+            value={name || ''}
             onChange={(e) => setName(e.target.value)}
             required
           />
 
-          <span className="name-input-error"></span>
+          <span className='name-input-error'></span>
         </label>
         <label>
           <input
-            type="text"
-            name="about"
-            id="about-input"
-            className="popup__input popup__input_type_about"
-            placeholder="Sobre mim"
+            type='text'
+            name='about'
+            id='about-input'
+            className='popup__input popup__input_type_about'
+            placeholder='Sobre mim'
             minLength={2}
             maxLength={200}
-            value={description}
+            value={description || ''}
             onChange={(e) => setDescription(e.target.value)}
             required
           />
 
-          <span className="about-input-error"></span>
+          <span className='about-input-error'></span>
         </label>
       </PopupWithForm>
     </>

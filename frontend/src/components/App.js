@@ -35,8 +35,6 @@ function App() {
     avatar: '',
   });
 
-  const token = localStorage.getItem('token');
-
   let history = useHistory();
 
   const EnableEsc = () => {
@@ -118,10 +116,10 @@ function App() {
     setPopupType(success);
   }
 
-  function handleRegisterError(fail) {
+  const handleRegisterError = (fail) => {
     setIsInfoToolOpen(true);
     setPopupType(fail);
-  }
+  };
 
   function handleClose() {
     if (popupType === 'success') {
@@ -142,20 +140,76 @@ function App() {
     history.push('/login');
   }
 
-  useEffect(() => {
-    // const token = localStorage.getItem('token');
+  // const [cardsLoaded, setCardsLoaded] = useState(false);
+  // useEffect(() => {
+  //   if (isLoggedIn && !cardsLoaded) {
+  //     api
+  //       .getInitialCards()
+  //       .then((cardsResponse) => {
+  //         if (cardsResponse.data) {
+  //           setCards(cardsResponse.data);
+  //           setCardsLoaded(true); // Atualiza o estado para indicar que os cartões foram carregados
+  //         }
+  //       })
+  //       .catch((error) => {
+  //         console.error('Erro ao obter os cartões:', error);
+  //       });
+  //   }
+  // }, [isLoggedIn, cardsLoaded]);
 
+  // useEffect(() => {
+  //   api
+  //     .getUserInfo(token)
+  //     .then((res) => {
+  //       setCurrentUser(res.data);
+  //       api
+  //         .getInitialCards(token)
+  //         .then((res) => {
+  //           if (res.data) {
+  //             setCards((cards) => res.data);
+  //             // setCards((cards) => [...cards, res.data]);
+  //           }
+  //         })
+  //         .catch((err) => console.log(err));
+  //     })
+  //     .catch((err) => console.log(err));
+  // }, [token]);
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
     if (token) {
       auth
         .checkToken(token)
         .then((res) => {
           if (res) {
+            console.log(res);
             setIsLoggedIn(true);
+            setCurrentUser(res.data);
             history.push('/');
             setUserEmail(res.data.email);
-            setCurrentUser(res.data);
+
+            // if (currentUser) {
+            //   api.getUserInfo(token).then((res) => {
+            //     setCurrentUser(() => res.data);
+            //   });
+            //   api.getInitialCards(token).then((res) => {
+            //     console.log(res);
+            //     setCards(() => res.data);
+            //   });
+            // }
           }
         })
+        // .then(() => {
+        //   if (isLoggedIn) {
+        //     api.getUserInfo(token).then((res) => {
+        //       setCurrentUser(() => res.data);
+        //     });
+        //     api.getInitialCards(token).then((res) => {
+        //       console.log(res);
+        //       setCards(() => res.data);
+        //     });
+        //   }
+        // })
 
         .catch((err) => {
           console.log(err);
@@ -163,24 +217,54 @@ function App() {
     } else {
       setIsLoggedIn(false);
     }
-  }, [isLoggedIn, userEmail]);
+  }, [isLoggedIn]);
 
   useEffect(() => {
-    api
-      .getUserInfo(token)
-      .then((res) => {
-        setCurrentUser(res.data);
-        api
-          .getInitialCards(token)
-          .then((res) => {
-            if (res.data) {
-              setCards(() => res.data);
-            }
-          })
-          .catch((err) => console.log(err));
-      })
-      .catch((err) => console.log(err));
-  }, [token]);
+    const token = localStorage.getItem('token');
+    isLoggedIn &&
+      api.getInitialCards(token).then((res) => {
+        if (res.data) {
+          setCards(() => res.data);
+        }
+      });
+  }, [isLoggedIn]);
+  // useEffect(() => {
+  //   const token = localStorage.getItem('token');
+  //   isLoggedIn &&
+  //     api
+  //       .getUserInfo(token)
+  //       .then((res) => {
+  //         setCurrentUser(res.data);
+  //       })
+  //       .then(
+  //         api.getInitialCards(token).then((res) => {
+  //           if (res.data) {
+  //             setCards(() => res.data);
+  //           }
+  //         })
+  //       )
+  //       .catch((err) => console.log(err));
+  // }, [isLoggedIn]);
+  // useEffect(() => {
+  //   if (token) {
+  //     auth
+  //       .checkToken(token)
+  //       .then(
+  //         api.getUserInfo().then((res) => {
+  //           setCurrentUser(res.data);
+  //           api
+  //             .getInitialCards()
+  //             .then((res) => {
+  //               if (res.data) {
+  //                 setCards(() => res.data);
+  //               }
+  //             })
+  //             .catch((err) => console.log(err));
+  //         })
+  //       )
+  //       .catch((err) => console.log(err));
+  //   }
+  // }, []);
 
   return (
     <div className='App'>
@@ -199,7 +283,10 @@ function App() {
               />
             </Route>
             <Route path='/login'>
-              <Login handleLogin={handleLogin} />
+              <Login
+                handleLogin={handleLogin}
+                handleRegisterError={handleRegisterError}
+              />
             </Route>
             <Route path='/'>
               <ProtectedRoute

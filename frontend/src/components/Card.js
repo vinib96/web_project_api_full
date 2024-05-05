@@ -11,7 +11,7 @@ function Card({
   const { link, name, likes, _id } = cardData;
 
   const currentUser = useContext(UserContext);
-  console.log(cardData);
+
   const isOwn = cardData.owner === currentUser._id;
   const cardDeleteButtonClassName = `elements__trash ${
     isOwn ? 'elements__trash_hidden' : 'elements__trash'
