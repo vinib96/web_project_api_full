@@ -7,7 +7,6 @@ import * as auth from '../utils/auth';
 function Login({ handleLogin, handleRegisterError }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [token, setToken] = useState(localStorage.getItem('token'));
 
   const history = useHistory();
 

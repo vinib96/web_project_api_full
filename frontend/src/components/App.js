@@ -28,7 +28,7 @@ function App() {
   const [popupType, setPopupType] = useState(false);
   const [cardsApp, setCards] = useState([]);
   const [userEmail, setUserEmail] = useState('');
-
+  const [token, setToken] = useState(localStorage.getItem('token'));
   const [currentUser, setCurrentUser] = useState({
     name: '',
     about: '',
@@ -140,131 +140,82 @@ function App() {
     history.push('/login');
   }
 
-  // const [cardsLoaded, setCardsLoaded] = useState(false);
-  // useEffect(() => {
-  //   if (isLoggedIn && !cardsLoaded) {
-  //     api
-  //       .getInitialCards()
-  //       .then((cardsResponse) => {
-  //         if (cardsResponse.data) {
-  //           setCards(cardsResponse.data);
-  //           setCardsLoaded(true); // Atualiza o estado para indicar que os cartões foram carregados
-  //         }
-  //       })
-  //       .catch((error) => {
-  //         console.error('Erro ao obter os cartões:', error);
-  //       });
-  //   }
-  // }, [isLoggedIn, cardsLoaded]);
-
-  // useEffect(() => {
-  //   api
-  //     .getUserInfo(token)
-  //     .then((res) => {
-  //       setCurrentUser(res.data);
-  //       api
-  //         .getInitialCards(token)
-  //         .then((res) => {
-  //           if (res.data) {
-  //             setCards((cards) => res.data);
-  //             // setCards((cards) => [...cards, res.data]);
-  //           }
-  //         })
-  //         .catch((err) => console.log(err));
-  //     })
-  //     .catch((err) => console.log(err));
-  // }, [token]);
-
-  useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      auth
-        .checkToken(token)
-        .then((res) => {
-          if (res) {
-            console.log(res);
-            setIsLoggedIn(true);
-            setCurrentUser(res.data);
-            history.push('/');
-            setUserEmail(res.data.email);
-
-            // if (currentUser) {
-            //   api.getUserInfo(token).then((res) => {
-            //     setCurrentUser(() => res.data);
-            //   });
-            //   api.getInitialCards(token).then((res) => {
-            //     console.log(res);
-            //     setCards(() => res.data);
-            //   });
-            // }
-          }
-        })
-        // .then(() => {
-        //   if (isLoggedIn) {
-        //     api.getUserInfo(token).then((res) => {
-        //       setCurrentUser(() => res.data);
-        //     });
-        //     api.getInitialCards(token).then((res) => {
-        //       console.log(res);
-        //       setCards(() => res.data);
-        //     });
-        //   }
-        // })
-
-        .catch((err) => {
-          console.log(err);
-        });
-    } else {
-      setIsLoggedIn(false);
-    }
-  }, [isLoggedIn]);
-
-  useEffect(() => {
-    const token = localStorage.getItem('token');
-    isLoggedIn &&
-      api.getInitialCards(token).then((res) => {
-        if (res.data) {
-          setCards(() => res.data);
-        }
-      });
-  }, [isLoggedIn]);
   // useEffect(() => {
   //   const token = localStorage.getItem('token');
-  //   isLoggedIn &&
-  //     api
-  //       .getUserInfo(token)
-  //       .then((res) => {
-  //         setCurrentUser(res.data);
-  //       })
-  //       .then(
-  //         api.getInitialCards(token).then((res) => {
-  //           if (res.data) {
-  //             setCards(() => res.data);
-  //           }
-  //         })
-  //       )
-  //       .catch((err) => console.log(err));
-  // }, [isLoggedIn]);
-  // useEffect(() => {
   //   if (token) {
-  //     auth
-  //       .checkToken(token)
-  //       .then(
-  //         api.getUserInfo().then((res) => {
-  //           setCurrentUser(res.data);
-  //           api
-  //             .getInitialCards()
-  //             .then((res) => {
-  //               if (res.data) {
-  //                 setCards(() => res.data);
-  //               }
-  //             })
-  //             .catch((err) => console.log(err));
-  //         })
-  //       )
-  //       .catch((err) => console.log(err));
+  //     auth.checkToken(token).then((res) => {
+  //       if (res) {
+  //         console.log(res);
+  //         setIsLoggedIn(true);
+  //         // setCurrentUser(res.data);
+  //         history.push('/');
+  //         setUserEmail(res.data.email);
+  //         api
+  //           .getUserInfo()
+  //           .then((res) => {
+  //             setCurrentUser(res.data);
+  //           })
+  //           .catch((error) => console.log(error));
+  //         api
+  //           .getInitialCards()
+  //           .then((res) => {
+  //             if (res.data) {
+  //               setCards(() => res.data);
+  //             }
+  //           })
+  //           .catch((error) => {
+  //             console.error('Erro ao buscar dados dos cartões:', error);
+  //           });
+  //       }
+  //     });
+  //   } else {
+  //     setIsLoggedIn(false);
   //   }
-  // }, []);
+  // }, [isLoggedIn]);
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+
+    const fetchData = async () => {
+      try {
+        if (token) {
+          // Verificar se o token é válido
+          const validToken = await auth.checkToken(token);
+
+          if (validToken) {
+            // Se o token for válido, buscar informações do usuário
+            const userInfoResponse = await api.getUserInfo();
+            setCurrentUser(userInfoResponse.data);
+
+            // Buscar os cartões iniciais
+            const initialCardsResponse = await api.getInitialCards();
+            if (initialCardsResponse.data) {
+              setCards(initialCardsResponse.data);
+            }
+
+            // Definir estado de login como verdadeiro
+            setIsLoggedIn(true);
+            // Definir o email do usuário
+            setUserEmail(userInfoResponse.data.email);
+
+            // Redirecionar para a página inicial
+            history.push('/');
+          } else {
+            // Se o token não for válido, definir estado de login como falso
+            setIsLoggedIn(false);
+          }
+        } else {
+          // Se não houver token, definir estado de login como falso
+          setIsLoggedIn(false);
+        }
+      } catch (error) {
+        console.error('Erro ao buscar dados:', error);
+      }
+    };
+
+    // Chamar a função fetchData para buscar dados
+    fetchData();
+  }, []);
 
   return (
     <div className='App'>

@@ -6,6 +6,7 @@ const ERROR_INVALID_DATA = 400;
 
 module.exports.getCards = (req, res) => {
   Card.find({})
+
     .then((cards) => res.send({ data: cards.reverse() }))
     .catch(() => res.status(ERROR_FETCH).send({ message: 'Error' }));
 };
