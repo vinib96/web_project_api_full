@@ -18,6 +18,7 @@ class Api {
     return fetch(`${this._baseUrl}/users/me`, {
       headers: this._headers,
     }).then((res) => {
+      console.log(res);
       if (res.ok) {
         return res.json();
       }

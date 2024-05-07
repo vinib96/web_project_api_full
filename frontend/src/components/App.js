@@ -28,13 +28,12 @@ function App() {
   const [popupType, setPopupType] = useState(false);
   const [cardsApp, setCards] = useState([]);
   const [userEmail, setUserEmail] = useState('');
-  const [token, setToken] = useState(localStorage.getItem('token'));
   const [currentUser, setCurrentUser] = useState({
     name: '',
     about: '',
     avatar: '',
   });
-
+  const [token, setToken] = useState('');
   let history = useHistory();
 
   const EnableEsc = () => {
@@ -140,82 +139,143 @@ function App() {
     history.push('/login');
   }
 
-  // useEffect(() => {
-  //   const token = localStorage.getItem('token');
-  //   if (token) {
-  //     auth.checkToken(token).then((res) => {
-  //       if (res) {
-  //         console.log(res);
-  //         setIsLoggedIn(true);
-  //         // setCurrentUser(res.data);
-  //         history.push('/');
-  //         setUserEmail(res.data.email);
-  //         api
-  //           .getUserInfo()
-  //           .then((res) => {
-  //             setCurrentUser(res.data);
-  //           })
-  //           .catch((error) => console.log(error));
-  //         api
-  //           .getInitialCards()
-  //           .then((res) => {
-  //             if (res.data) {
-  //               setCards(() => res.data);
-  //             }
-  //           })
-  //           .catch((error) => {
-  //             console.error('Erro ao buscar dados dos cartões:', error);
-  //           });
-  //       }
-  //     });
-  //   } else {
-  //     setIsLoggedIn(false);
-  //   }
-  // }, [isLoggedIn]);
-
   useEffect(() => {
     const token = localStorage.getItem('token');
 
-    const fetchData = async () => {
-      try {
-        if (token) {
-          // Verificar se o token é válido
-          const validToken = await auth.checkToken(token);
+    if (!token) {
+      setIsLoggedIn(false);
+      return;
+    }
 
-          if (validToken) {
-            // Se o token for válido, buscar informações do usuário
-            const userInfoResponse = await api.getUserInfo();
-            setCurrentUser(userInfoResponse.data);
-
-            // Buscar os cartões iniciais
-            const initialCardsResponse = await api.getInitialCards();
-            if (initialCardsResponse.data) {
-              setCards(initialCardsResponse.data);
-            }
-
-            // Definir estado de login como verdadeiro
-            setIsLoggedIn(true);
-            // Definir o email do usuário
-            setUserEmail(userInfoResponse.data.email);
-
-            // Redirecionar para a página inicial
-            history.push('/');
-          } else {
-            // Se o token não for válido, definir estado de login como falso
-            setIsLoggedIn(false);
-          }
+    auth
+      .checkToken(token)
+      .then((res) => {
+        if (res) {
+          setIsLoggedIn(true);
+          setToken(token);
+          setUserEmail(res.data.email);
+          history.push('/');
         } else {
-          // Se não houver token, definir estado de login como falso
           setIsLoggedIn(false);
         }
-      } catch (error) {
-        console.error('Erro ao buscar dados:', error);
-      }
-    };
+      })
+      .catch((error) => {
+        console.error('Erro durante o processo de login:', error);
+        setIsLoggedIn(false);
+      });
 
-    // Chamar a função fetchData para buscar dados
-    fetchData();
-  }, []);
+    // Chamada à API fora do then de verificação de token
+    api
+      .getInitialCards(token)
+      .then((initialCardsResponse) => {
+        setCards(initialCardsResponse.data);
+      })
+      .catch((error) => {
+        console.error('Erro ao buscar dados dos cartões:', error);
+      });
+
+    api
+      .getUserInfo(token)
+      .then((userInfoResponse) => {
+        setCurrentUser(userInfoResponse.data);
+      })
+      .catch((error) => {
+        console.error('Erro ao buscar informações do usuário:', error);
+      });
+  }, [history, token]);
+
+  // useEffect(() => {
+  //   const token = localStorage.getItem('token');
+  //   if (token) {
+  //     auth
+  //       .checkToken(token)
+  //       .then((res) => {
+  //         if (res) {
+  //           setIsLoggedIn(true);
+  //           setToken(token);
+  //           setUserEmail(res.data.email);
+  //           history.push('/');
+
+  //           // Após a verificação do token, realizar chamadas à API
+  //           return Promise.all([
+  //             api.getInitialCards(token),
+  //             api.getUserInfo(token),
+  //           ]);
+  //         }
+  //       })
+  //       .then(([initialCardsResponse, userInfoResponse]) => {
+  //         // Tratar os resultados das chamadas à API
+  //         setCards(initialCardsResponse.data);
+  //         setCurrentUser(userInfoResponse.data);
+  //       })
+  //       .catch((error) => {
+  //         console.error('Erro durante o processo de login:', error);
+  //       });
+  //   } else {
+  //     setIsLoggedIn(false);
+  //   }
+  // }, [history, token]);
+
+  // useEffect(() => {
+  //   const token = localStorage.getItem('token');
+  //   if (token) {
+  //     auth.checkToken(token).then(
+  //       (res) => {
+  //         if (res) {
+  //           console.log(res);
+  //           setIsLoggedIn(true);
+  //           setToken(token);
+  //           // setCurrentUser(res.data);
+  //           history.push('/');
+  //           setUserEmail(res.data.email);
+  //         }
+  //       },
+  //       api
+  //         .getInitialCards(token)
+  //         .then((res) => {
+  //           setCards(res.data);
+  //         })
+  //         .catch((error) => {
+  //           return error;
+  //         }),
+  //       api
+  //         .getUserInfo(token)
+  //         .then((res) => {
+  //           setCurrentUser(res.data);
+  //         })
+  //         .catch((error) => {
+  //           return error;
+  //         })
+  //     );
+  //   } else {
+  //     setIsLoggedIn(false);
+  //   }
+  // }, [history, token]);
+
+  // useEffect(() => {
+  //   if (token) {
+  //     api
+  //       .getInitialCards(token)
+  //       .then((res) => {
+  //         setCards(res.data);
+  //       })
+  //       .catch((error) => {
+  //         return error;
+  //       });
+  //   }
+  // }, [token]);
+  // useEffect(() => {
+  //   if (token) {
+  //     api
+  //       .getUserInfo(token)
+  //       .then((res) => {
+  //         setCurrentUser(res.data);
+  //       })
+  //       .catch((error) => {
+  //         return error;
+  //       });
+  //   }
+  // }, [token]);
 
   return (
     <div className='App'>
@@ -237,6 +297,11 @@ function App() {
               <Login
                 handleLogin={handleLogin}
                 handleRegisterError={handleRegisterError}
+              />
+              <InfoToolTip
+                isOpen={isInfoToolOpen}
+                popupType={popupType}
+                handleClose={handleClose}
               />
             </Route>
             <Route path='/'>

@@ -70,27 +70,35 @@ module.exports.createUser = (req, res) => {
     });
 };
 
-module.exports.login = (req, res) => {
+module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
+
   User.findOne({ email })
     .select('+password')
-    .exec()
     .then((user) => {
       if (!user) {
-        return res.status(401).json('Email ou senha inválidos');
-      } else {
-        return bcrypt.compare(password, user.password).then((matched) => {
-          if (!matched) {
-            return res.status(401).json('Email ou senha inválidos');
-          }
-          const token = jwt.sign({ _id: user._id }, JWT_SECRET, {
-            expiresIn: '7d',
-          });
-          return res.status(200).send({ token });
-        });
+        const error = new Error('Email ou senha incorretos.');
+        error.status = 404;
+        throw error;
       }
+
+      return bcrypt.compare(password, user.password).then((isMatched) => {
+        if (!isMatched) {
+          const error = new Error('Email ou senha incorretos.');
+          error.status = 401;
+          throw error;
+        }
+
+        const token = jwt.sign({ _id: user._id }, JWT_SECRET, {
+          expiresIn: '7d',
+        });
+        res.status(200).send({ token });
+      });
     })
-    .catch(() => res.status(500).json('Internal Server Error'));
+    .catch((err) => {
+      err.message = 'Erro interno do servidor.';
+      next(err);
+    });
 };
 
 module.exports.updateUser = (req, res) => {

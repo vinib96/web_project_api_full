@@ -14,13 +14,13 @@ function Login({ handleLogin, handleRegisterError }) {
     e.preventDefault();
     auth
       .authorize(email, password)
+
       .then((res) => {
-        if (res) {
-          handleLogin();
-          history.push('/');
-        } else {
+        if (res === undefined) {
           handleRegisterError('fail');
         }
+        handleLogin();
+        history.push('/');
       })
       .catch((error) => {
         console.error(error);
