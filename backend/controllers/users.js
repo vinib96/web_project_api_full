@@ -1,14 +1,14 @@
-const User = require('../models/user');
-
-const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 
 const dotenv = require('dotenv');
 
+const bcrypt = require('bcrypt');
+
+const User = require('../models/user');
+
 dotenv.config();
 
-const jwt = require('jsonwebtoken');
-
-const { NODE_ENV, JWT_SECRET } = process.env;
+const { JWT_SECRET } = process.env;
 
 const ERROR_NOT_FOUND = 404;
 const ERROR_FETCH = 500;
@@ -96,8 +96,11 @@ module.exports.login = (req, res, next) => {
       });
     })
     .catch((err) => {
-      err.message = 'Erro interno do servidor.';
-      next(err);
+      if (err.name === 'ValidationError') {
+        res.status(ERROR_INVALID_DATA).send({ message: 'Dados inválidos' });
+      } else {
+        res.status(ERROR_FETCH).send({ message: 'Error' });
+      }
     });
 };
 
