@@ -23,7 +23,11 @@ function Login({ handleLogin, handleRegisterError }) {
         history.push('/');
       })
       .catch((error) => {
-        console.error(error);
+        if (error.response && error.response.status === 500) {
+          handleRegisterError('fail');
+        } else {
+          console.error(error);
+        }
       });
   }
 

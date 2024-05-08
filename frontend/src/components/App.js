@@ -142,140 +142,86 @@ function App() {
   useEffect(() => {
     const token = localStorage.getItem('token');
 
-    if (!token) {
+    if (token) {
+      auth
+        .checkToken(token)
+        .then((res) => {
+          if (res) {
+            setIsLoggedIn(true);
+            history.push('/');
+            setUserEmail(res.data.email);
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+      api
+        .getInitialCards(token)
+        .then((initialCardsResponse) => {
+          setCards(initialCardsResponse.data);
+        })
+        .catch((error) => {
+          console.error('Erro ao buscar dados dos cartões:', error);
+        });
+
+      api
+        .getUserInfo(token)
+        .then((userInfoResponse) => {
+          setCurrentUser(userInfoResponse.data);
+        })
+        .catch((error) => {
+          console.error('Erro ao buscar informações do usuário:', error);
+        });
+    } else {
       setIsLoggedIn(false);
-      return;
     }
-
-    auth
-      .checkToken(token)
-      .then((res) => {
-        if (res) {
-          setIsLoggedIn(true);
-          setToken(token);
-          setUserEmail(res.data.email);
-          history.push('/');
-        } else {
-          setIsLoggedIn(false);
-        }
-      })
-      .catch((error) => {
-        console.error('Erro durante o processo de login:', error);
-        setIsLoggedIn(false);
-      });
-
-    // Chamada à API fora do then de verificação de token
-    api
-      .getInitialCards(token)
-      .then((initialCardsResponse) => {
-        setCards(initialCardsResponse.data);
-      })
-      .catch((error) => {
-        console.error('Erro ao buscar dados dos cartões:', error);
-      });
-
-    api
-      .getUserInfo(token)
-      .then((userInfoResponse) => {
-        setCurrentUser(userInfoResponse.data);
-      })
-      .catch((error) => {
-        console.error('Erro ao buscar informações do usuário:', error);
-      });
-  }, [history, token]);
+  }, [isLoggedIn, userEmail]);
 
   // useEffect(() => {
   //   const token = localStorage.getItem('token');
-  //   if (token) {
-  //     auth
-  //       .checkToken(token)
-  //       .then((res) => {
-  //         if (res) {
-  //           setIsLoggedIn(true);
-  //           setToken(token);
-  //           setUserEmail(res.data.email);
-  //           history.push('/');
 
-  //           // Após a verificação do token, realizar chamadas à API
-  //           return Promise.all([
-  //             api.getInitialCards(token),
-  //             api.getUserInfo(token),
-  //           ]);
-  //         }
-  //       })
-  //       .then(([initialCardsResponse, userInfoResponse]) => {
-  //         // Tratar os resultados das chamadas à API
-  //         setCards(initialCardsResponse.data);
-  //         setCurrentUser(userInfoResponse.data);
-  //       })
-  //       .catch((error) => {
-  //         console.error('Erro durante o processo de login:', error);
-  //       });
-  //   } else {
+  //   if (!token) {
   //     setIsLoggedIn(false);
-  //   }
-  // }, [history, token]);
 
-  // useEffect(() => {
-  //   const token = localStorage.getItem('token');
-  //   if (token) {
-  //     auth.checkToken(token).then(
-  //       (res) => {
-  //         if (res) {
-  //           console.log(res);
-  //           setIsLoggedIn(true);
-  //           setToken(token);
-  //           // setCurrentUser(res.data);
-  //           history.push('/');
-  //           setUserEmail(res.data.email);
-  //         }
-  //       },
-  //       api
-  //         .getInitialCards(token)
-  //         .then((res) => {
-  //           setCards(res.data);
-  //         })
-  //         .catch((error) => {
-  //           return error;
-  //         }),
-  //       api
-  //         .getUserInfo(token)
-  //         .then((res) => {
-  //           setCurrentUser(res.data);
-  //         })
-  //         .catch((error) => {
-  //           return error;
-  //         })
-  //     );
-  //   } else {
-  //     setIsLoggedIn(false);
+  //     return;
   //   }
-  // }, [history, token]);
 
-  // useEffect(() => {
-  //   if (token) {
-  //     api
-  //       .getInitialCards(token)
-  //       .then((res) => {
-  //         setCards(res.data);
-  //       })
-  //       .catch((error) => {
-  //         return error;
-  //       });
-  //   }
-  // }, [token]);
-  // useEffect(() => {
-  //   if (token) {
-  //     api
-  //       .getUserInfo(token)
-  //       .then((res) => {
-  //         setCurrentUser(res.data);
-  //       })
-  //       .catch((error) => {
-  //         return error;
-  //       });
-  //   }
-  // }, [token]);
+  //   auth
+  //     .checkToken(token)
+  //     .then((res) => {
+  //       if (res) {
+  //         setIsLoggedIn(true);
+  //         setToken(token);
+  //         setUserEmail(res.data.email);
+  //         history.push('/');
+  //       } else {
+  //         setIsLoggedIn(false);
+  //       }
+  //     })
+  //     .catch((error) => {
+  //       console.error('Erro durante o processo de login:', error);
+  //       setIsLoggedIn(false);
+  //     });
+
+  //   // Chamada à API fora do then de verificação de token
+  //   api
+  //     .getInitialCards(token)
+  //     .then((initialCardsResponse) => {
+  //       setCards(initialCardsResponse.data);
+  //     })
+  //     .catch((error) => {
+  //       console.error('Erro ao buscar dados dos cartões:', error);
+  //     });
+
+  //   api
+  //     .getUserInfo(token)
+  //     .then((userInfoResponse) => {
+  //       setCurrentUser(userInfoResponse.data);
+  //     })
+  //     .catch((error) => {
+  //       console.error('Erro ao buscar informações do usuário:', error);
+  //     });
+  // }, [history, token]);
 
   return (
     <div className='App'>
