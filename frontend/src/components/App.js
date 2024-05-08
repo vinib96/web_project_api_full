@@ -33,7 +33,7 @@ function App() {
     about: '',
     avatar: '',
   });
-  const [token, setToken] = useState('');
+
   let history = useHistory();
 
   const EnableEsc = () => {
