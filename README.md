@@ -1,6 +1,6 @@
 # PROJETO: "AO REDOR DOS EUA" - BACKEND e FRONTEND
 
-O projeto "Ao redor dos EUA - Autorização e Registro" (referente a Sprint 16) do curso de "Desenvolvedor Web" da TripleTen consistiu na criação de uma página web onde os usuários podem se registrar, fazer login, adicionar, remover e curtir fotos, bem como editar informações e o avatar de seu perfil. O objetivo é utilizarmos a biblioteca React para criação do aplicativo, refatorar o código do [projeto anterior](https://github.com/vinib96/web_project_around) e adicionar uma página de registro e login (com rotas protegidas), bem como  a criação de um servidor com uma API e autenticação de usuário.
+O projeto "Ao redor dos EUA - Autorização e Registro" consistiu na criação de uma página web onde os usuários podem se registrar, fazer login, adicionar, remover e curtir fotos, bem como editar informações e o avatar de seu perfil. O objetivo é utilizarmos a biblioteca React para criação do aplicativo, refatorar o código do [projeto anterior](https://github.com/vinib96/web_project_around) e adicionar uma página de registro e login (com rotas protegidas), bem como  a criação de um servidor com uma API e autenticação de usuário. Como resultados, espera-se um código mais limpo e modular, melhor usabilidade e integração eficiente entre frontend e backend.
 
 ## Funcionalidades
 
